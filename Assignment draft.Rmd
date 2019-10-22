@@ -1,0 +1,134 @@
+---
+title: "Team Assignment2 for DA1"
+author: "liyue"
+date: "10/20/2019"
+output: pdf_document
+---
+
+
+
+```{r}
+library(readxl)
+da1_asgn<- read_excel("~/Desktop/DA1/da1-asgn-Saroyan_Kiss_Li.xlsx")
+View(da1_asgn)
+```
+
+1.Discuss the data collection, difficulties, problems. How you picked product 2. How did you decide on store features to record and how did you code it? (2-3 paragraphs) [1p]
+
+
+
+2.Present descriptive statistics of prices. You may do it with one or two tables as you see fit [1p]
+
+```{r}
+summary(da1_asgn$Price_of_Coca_Cola)
+sd(na.omit(da1_asgn$Price_of_Coca_Cola))
+
+
+```
+
+
+3.Show two descriptive graphs of price distributions of your products in the whole data (ie two districts merged). [0.5p]
+
+```{r}
+library(ggplot2)
+da1_asgn<- read_excel("~/Desktop/DA1/da1-asgn-Saroyan_Kiss_Li.xlsx")
+Graph_2<- ggplot(da1_asgn, aes(Price_of_Orbit))
+Graph_2+ geom_histogram(position = 'identity', alpha = 0.7, binwidth = 10, aes(y = ..density..,fill = factor(InnerCity_or_NOT)))+
+    stat_density(geom = 'line', position = 'identity', aes(colour = factor(InnerCity_or_NOT)))
+
+
+```
+
+```{r}
+library(ggplot2)
+da1_asgn<- read_excel("~/Desktop/DA1/da1-asgn-Saroyan_Kiss_Li.xlsx")
+Graph_3<- ggplot(da1_asgn, aes(Price_of_Orbit))
+Graph_3+ geom_histogram(position = 'identity', alpha = 0.5, binwidth = 10, aes(fill = factor(InnerCity_or_NOT)))+
+    stat_count(geom = 'point', position = 'identity', aes(colour = factor(InnerCity_or_NOT)))
+```
+
+4.Show two descriptive graphs of price distributions of Coca Cola in the two districts merged [0.5p]
+```{r}
+library(ggplot2)
+da1_asgn<- read_excel("~/Desktop/DA1/da1-asgn-Saroyan_Kiss_Li.xlsx")
+Graph_4<- ggplot(da1_asgn, aes(Price_of_Coca_Cola))
+Graph_4+ geom_histogram(position = 'identity', alpha = 0.5, binwidth = 20, aes(y = ..density..,fill = factor(InnerCity_or_NOT)))+
+    stat_density(geom = 'line', position = 'identity', aes(colour = factor(InnerCity_or_NOT)))
+```
+
+
+```{r}
+library(ggplot2)
+da1_asgn<- read_excel("~/Desktop/DA1/da1-asgn-Saroyan_Kiss_Li.xlsx")
+Graph_5<- ggplot(da1_asgn, aes(Price_of_Coca_Cola))
+Graph_5+ geom_histogram(position = 'identity', alpha = 0.5, binwidth = 20, aes(fill = factor(InnerCity_or_NOT)))+
+    stat_count(geom = 'point', position = 'identity', aes(colour = factor(InnerCity_or_NOT)))
+  
+```
+
+5.Test if the price of Coca Cola is the same in the two districts. [1p]
+
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+da1_asgn<- read_excel("~/Desktop/DA1/da1-asgn-Saroyan_Kiss_Li.xlsx")
+Test_price<- da1_asgn%>%
+  group_by(InnerCity_or_NOT)%>%
+  summarise('ave_price2' = mean(Price_of_Coca_Cola,na.rm = TRUE))%>%
+  ggplot(mapping = aes(x= InnerCity_or_NOT, y=ave_price2,fill=InnerCity_or_NOT))+
+  scale_x_continuous(breaks = c(0:1),labels = c('Suburbs','Innercity'))+
+  scale_colour_hue(breaks = c(0:1),labels = c('Suburbs','Innercity'))+
+  geom_bar(position="dodge",stat="identity")+
+  labs(x = 'Innercity or Not', y = 'Average Pice of Coca Cola')+
+  theme_bw()
+
+innercity=da1_asgn[da1_asgn$InnerCity_or_NOT==1,]
+outercity=da1_asgn[da1_asgn$InnerCity_or_NOT==0,]
+  
+t.test(innercity$Price_of_Coca_Cola,outercity$Price_of_Coca_Cola)
+  
+
+```
+
+```{r}
+
+da1_asgn<- read_excel("~/Desktop/DA1/da1-asgn-Saroyan_Kiss_Li.xlsx")
+da1_asgn
+
+da1_asgn$InnerCity_or_NOT  <- as.factor(da1_asgn$InnerCity_or_NOT)
+
+Graph_0<- ggplot(da1_asgn, aes(x= InnerCity_or_NOT, y= Price_of_Coca_Cola))
+Graph_0+ geom_boxplot()
+```
+
+6.Summarize your findings regarding price distributions [1p]
+
+
+
+
+
+
+
+7.Now pick any feature of stores and create a binary variable. Pool your data across districts. Compare prices by this new variable and discuss. [1p]
+
+
+```{r}
+library(dplyr)
+da1_asgn$big_store <- ifelse(da1_asgn$No_of_cashier>1,T,F)
+table(da1_asgn$big_store)
+
+
+library(ggplot2)
+Graph_6<- ggplot(da1_asgn, aes(Price_of_Coca_Cola))
+Graph_6+ geom_histogram(position = 'identity', alpha = 0.5, binwidth = 20, aes(fill = factor(big_store)))
+
+
+
+library(ggplot2)
+Graph_7<- ggplot(da1_asgn, aes(Price_of_Orbit))
+Graph_7+ geom_histogram(position = 'identity', alpha = 0.5, binwidth = 20, aes(fill = factor(big_store)))
+```
+
+
+
